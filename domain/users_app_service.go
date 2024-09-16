@@ -2,8 +2,8 @@ package domain
 
 import (
 	"context"
-	"echo-server/repository"
 
+	"github.com/tmsick/echo-server/repository"
 	"go.uber.org/zap"
 )
 

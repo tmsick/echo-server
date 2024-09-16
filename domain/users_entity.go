@@ -1,6 +1,8 @@
 package domain
 
-import "echo-server/repository"
+import (
+	"github.com/tmsick/echo-server/repository"
+)
 
 type User struct {
 	ID    UserID

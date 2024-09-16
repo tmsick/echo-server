@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"echo-server/controller"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/tmsick/echo-server/controller"
 	"go.uber.org/zap"
 )
 

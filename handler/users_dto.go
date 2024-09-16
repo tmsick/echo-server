@@ -1,6 +1,8 @@
 package handler
 
-import "echo-server/controller"
+import (
+	"github.com/tmsick/echo-server/controller"
+)
 
 type User struct {
 	ID    string `json:"id"`

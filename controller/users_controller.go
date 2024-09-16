@@ -2,8 +2,8 @@ package controller
 
 import (
 	"context"
-	"echo-server/domain"
 
+	"github.com/tmsick/echo-server/domain"
 	"go.uber.org/zap"
 )
 

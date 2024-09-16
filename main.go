@@ -1,19 +1,19 @@
 package main
 
 import (
-	"echo-server/controller"
-	"echo-server/domain"
-	"echo-server/environment"
-	"echo-server/handler"
-	"echo-server/kontext"
-	"echo-server/logger"
-	"echo-server/repository"
-	"echo-server/validator"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/tmsick/echo-server/controller"
+	"github.com/tmsick/echo-server/domain"
+	"github.com/tmsick/echo-server/environment"
+	"github.com/tmsick/echo-server/handler"
+	"github.com/tmsick/echo-server/kontext"
+	"github.com/tmsick/echo-server/logger"
+	"github.com/tmsick/echo-server/repository"
+	"github.com/tmsick/echo-server/validator"
 	"go.uber.org/zap"
 )
 

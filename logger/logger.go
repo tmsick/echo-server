@@ -2,8 +2,8 @@ package logger
 
 import (
 	"context"
-	"echo-server/kontext"
 
+	"github.com/tmsick/echo-server/kontext"
 	"go.uber.org/zap"
 )
 

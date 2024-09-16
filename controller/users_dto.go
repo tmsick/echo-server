@@ -1,6 +1,8 @@
 package controller
 
-import "echo-server/domain"
+import (
+	"github.com/tmsick/echo-server/domain"
+)
 
 type User struct {
 	ID    string
