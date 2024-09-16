@@ -28,64 +28,35 @@ func NewUsersAppServiceImpl(logger func(ctx context.Context) *zap.Logger, reposi
 }
 
 func (a *UsersAppServiceImpl) ListUsers(ctx context.Context) ([]*User, error) {
-	users, err := a.repository.ListUsers(ctx)
+	_users, err := a.repository.ListUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	list := make([]*User, 0, len(users))
-	for _, u := range users {
-		list = append(list,
-			&User{
-				ID:    UserID(u.ID),
-				Name:  UserName(u.Name),
-				Email: UserEmail(u.Email),
-			})
-	}
-	return list, nil
+	return FromUserRepositoryDTOSlice(_users), nil
 }
 
 func (a *UsersAppServiceImpl) GetUser(ctx context.Context, id UserID) (*User, error) {
-	user, err := a.repository.GetUser(ctx, id.String())
+	_user, err := a.repository.GetUser(ctx, id.String())
 	if err != nil {
 		return nil, err
 	}
-	return &User{
-		ID:    UserID(user.ID),
-		Name:  UserName(user.Name),
-		Email: UserEmail(user.Email),
-	}, nil
+	return FromUserRepositoryDTO(_user), nil
 }
 
-func (a *UsersAppServiceImpl) CreateUser(ctx context.Context, u *User) (*User, error) {
-	user, err := a.repository.CreateUser(ctx, &repository.User{
-		ID:    u.ID.String(),
-		Name:  u.Name.String(),
-		Email: u.Email.String(),
-	})
+func (a *UsersAppServiceImpl) CreateUser(ctx context.Context, user *User) (*User, error) {
+	_user, err := a.repository.CreateUser(ctx, ToUserRepositoryDTO(user))
 	if err != nil {
 		return nil, err
 	}
-	return &User{
-		ID:    UserID(user.ID),
-		Name:  UserName(user.Name),
-		Email: UserEmail(user.Email),
-	}, nil
+	return FromUserRepositoryDTO(_user), nil
 }
 
-func (a *UsersAppServiceImpl) UpdateUser(ctx context.Context, u *User) (*User, error) {
-	user, err := a.repository.UpdateUser(ctx, &repository.User{
-		ID:    u.ID.String(),
-		Name:  u.Name.String(),
-		Email: u.Email.String(),
-	})
+func (a *UsersAppServiceImpl) UpdateUser(ctx context.Context, user *User) (*User, error) {
+	_user, err := a.repository.UpdateUser(ctx, ToUserRepositoryDTO(user))
 	if err != nil {
 		return nil, err
 	}
-	return &User{
-		ID:    UserID(user.ID),
-		Name:  UserName(user.Name),
-		Email: UserEmail(user.Email),
-	}, nil
+	return FromUserRepositoryDTO(_user), nil
 }
 
 func (a *UsersAppServiceImpl) RemoveUser(ctx context.Context, id UserID) error {
