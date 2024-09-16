@@ -4,8 +4,8 @@ import "echo-server/controller"
 
 type User struct {
 	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 func FromUserControllerDTO(_user *controller.User) *User {

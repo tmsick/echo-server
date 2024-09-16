@@ -60,10 +60,18 @@ func (h *UsersHandlerImpl) Show(c echo.Context) error {
 
 func (h *UsersHandlerImpl) Create(c echo.Context) error {
 	ctx := c.Request().Context()
+
+	logger := h.logger(ctx)
+	defer logger.Sync()
+
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return err
 	}
+	if err := c.Validate(user); err != nil {
+		return err
+	}
+
 	_user, err := h.controller.CreateUser(ctx, ToUserControllerDTO(user))
 	if err != nil {
 		return err

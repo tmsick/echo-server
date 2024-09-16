@@ -8,6 +8,7 @@ import (
 	"echo-server/kontext"
 	"echo-server/logger"
 	"echo-server/repository"
+	"echo-server/validator"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,6 +33,9 @@ func main() {
 
 	// ---- echo ----
 	e := echo.New()
+
+	// ---- validator ----
+	e.Validator = validator.New()
 
 	// ---- middleware ----
 	e.Pre(middleware.RemoveTrailingSlash())
@@ -61,6 +65,8 @@ func main() {
 			t0 := time.Now()
 
 			req := c.Request()
+			res := c.Response()
+
 			ctx := req.Context()
 			id := kontext.GetRequestID(ctx)
 			reqTime := kontext.GetRequestTime(ctx)
@@ -76,15 +82,15 @@ func main() {
 			)
 
 			err := next(c)
+			c.Error(err)
 
 			t1 := time.Now()
 			td := t1.Sub(t0)
 
-			req = c.Request()
-			res := c.Response()
 			id = kontext.GetRequestID(req.Context())
 			reqTime = kontext.GetRequestTime(ctx)
 			l.Info("api_end",
+				zap.Error(err),
 				zap.Int("status", res.Status),
 				zap.Int64("latency_nano", int64(td)),
 				zap.Int64("response_size", res.Size),
