@@ -1,10 +1,13 @@
 package main
 
 import (
+	"echo-server/controller"
+	"echo-server/domain"
 	"echo-server/environment"
+	"echo-server/handler"
 	"echo-server/kontext"
 	"echo-server/logger"
-	"echo-server/router"
+	"echo-server/repository"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,11 +24,11 @@ func main() {
 	}
 
 	// ---- logger ----
-	logger, err := logger.New(env.Env)
+	l, err := logger.New(env.Env)
 	if err != nil {
 		panic(err)
 	}
-	defer logger.Sync()
+	defer l.Sync()
 
 	// ---- echo ----
 	e := echo.New()
@@ -61,7 +64,7 @@ func main() {
 			ctx := req.Context()
 			id := kontext.GetRequestID(ctx)
 			reqTime := kontext.GetRequestTime(ctx)
-			logger.Info("api_start",
+			l.Info("api_start",
 				zap.String("host", req.Host),
 				zap.String("method", req.Method),
 				zap.String("referer", req.Referer()),
@@ -81,7 +84,7 @@ func main() {
 			res := c.Response()
 			id = kontext.GetRequestID(req.Context())
 			reqTime = kontext.GetRequestTime(ctx)
-			logger.Info("api_end",
+			l.Info("api_end",
 				zap.Int("status", res.Status),
 				zap.Int64("latency_nano", int64(td)),
 				zap.Int64("response_size", res.Size),
@@ -93,9 +96,17 @@ func main() {
 		}
 	})
 
-	// ---- router ----
-	router.Register(e, logger)
+	// ---- DI ----
+	var (
+		usersRepository repository.UsersRepository = repository.NewUsersRepositoryImpl(logger.WithContext(l))
+		usersAppService domain.UsersAppService     = domain.NewUsersAppServiceImpl(logger.WithContext(l), usersRepository)
+		usersController controller.UsersController = controller.NewUsersControllerImpl(logger.WithContext(l), usersAppService)
+		usersHandler    handler.UsersHandler       = handler.NewUsersHandlerImpl(logger.WithContext(l), usersController)
+	)
+
+	// ---- register routers ----
+	usersHandler.Register(e.Group("/users"))
 
 	// ---- start ----
-	logger.Fatal("fatal server", zap.Error(e.Start("127.0.0.1:8080")))
+	l.Fatal("fatal server", zap.Error(e.Start("127.0.0.1:8080")))
 }

@@ -10,6 +10,7 @@ import (
 )
 
 type UsersHandler interface {
+	Register(g *echo.Group)
 	Index(c echo.Context) error
 	Show(c echo.Context) error
 	Create(c echo.Context) error
@@ -27,6 +28,14 @@ func NewUsersHandlerImpl(logger func(ctx context.Context) *zap.Logger, controlle
 		logger:     logger,
 		controller: controller,
 	}
+}
+
+func (h *UsersHandlerImpl) Register(g *echo.Group) {
+	g.GET("", h.Index)
+	g.GET("/:id", h.Show)
+	g.POST("", h.Create)
+	g.PATCH("/:id", h.Update)
+	g.DELETE("/:id", h.Remove)
 }
 
 func (h *UsersHandlerImpl) Index(c echo.Context) error {
