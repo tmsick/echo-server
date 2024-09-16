@@ -1,1 +1,2 @@
 export ECHO_SERVER_ENV=""
+export ECHO_SERVER_JWT_SECRET=""

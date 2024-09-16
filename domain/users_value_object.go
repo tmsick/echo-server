@@ -1,9 +1,10 @@
 package domain
 
 type (
-	UserID    string
-	UserName  string
-	UserEmail string
+	UserID       string
+	UserName     string
+	UserEmail    string
+	UserPassword string
 )
 
 func (i UserID) String() string {
@@ -16,4 +17,8 @@ func (n UserName) String() string {
 
 func (e UserEmail) String() string {
 	return string(e)
+}
+
+func (p UserPassword) String() string {
+	return string(p)
 }

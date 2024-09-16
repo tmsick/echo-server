@@ -4,8 +4,10 @@ import (
 	"context"
 	"net/http"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/tmsick/echo-server/controller"
+	"github.com/tmsick/echo-server/environment"
 	"go.uber.org/zap"
 )
 
@@ -31,6 +33,7 @@ func NewUsersHandlerImpl(logger func(ctx context.Context) *zap.Logger, controlle
 }
 
 func (h *UsersHandlerImpl) Register(g *echo.Group) {
+	g.Use(echojwt.JWT([]byte(environment.JWTSecret)))
 	g.GET("", h.Index)
 	g.GET("/:id", h.Show)
 	g.POST("", h.Create)
@@ -60,9 +63,6 @@ func (h *UsersHandlerImpl) Show(c echo.Context) error {
 
 func (h *UsersHandlerImpl) Create(c echo.Context) error {
 	ctx := c.Request().Context()
-
-	logger := h.logger(ctx)
-	defer logger.Sync()
 
 	user := new(User)
 	if err := c.Bind(user); err != nil {

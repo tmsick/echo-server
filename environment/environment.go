@@ -6,12 +6,28 @@ import (
 
 const prefix = "ECHO_SERVER"
 
-type Env struct {
-	Env string
+var (
+	Env       string
+	JWTSecret string
+)
+
+func init() {
+	e, err := Load()
+	if err != nil {
+		panic(err)
+	}
+
+	Env = e.Env
+	JWTSecret = e.JWTSecret
 }
 
-func Load() (*Env, error) {
-	e := new(Env)
+type Environment struct {
+	Env       string `envconfig:"ECHO_SERVER_ENV"`
+	JWTSecret string `envconfig:"ECHO_SERVER_JWT_SECRET"`
+}
+
+func Load() (*Environment, error) {
+	e := new(Environment)
 	if err := envconfig.Process(prefix, e); err != nil {
 		return nil, err
 	}

@@ -10,20 +10,25 @@ import (
 
 var Users = map[string]*User{
 	"1": {
-		ID:    "1",
-		Name:  "Alice",
-		Email: "alice@example.com",
+		ID:       "1",
+		Name:     "Alice",
+		Email:    "alice@example.com",
+		Password: "password_alice",
 	},
 	"2": {
-		ID:    "2",
-		Name:  "Bob",
-		Email: "bob@example.com",
+		ID:       "2",
+		Name:     "Bob",
+		Email:    "bob@example.com",
+		Password: "password_bob",
 	},
 }
+
+var ErrUserNotFound = errors.New("user not found")
 
 type UsersRepository interface {
 	ListUsers(ctx context.Context) ([]*User, error)
 	GetUser(ctx context.Context, id string) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	CreateUser(ctx context.Context, user *User) (*User, error)
 	UpdateUser(ctx context.Context, user *User) (*User, error)
 	RemoveUser(ctx context.Context, id string) error
@@ -50,9 +55,18 @@ func (r *UsersRepositoryImpl) ListUsers(ctx context.Context) ([]*User, error) {
 func (r *UsersRepositoryImpl) GetUser(ctx context.Context, id string) (*User, error) {
 	user, ok := Users[id]
 	if !ok {
-		return nil, errors.New("user not found")
+		return nil, ErrUserNotFound
 	}
 	return user, nil
+}
+
+func (r *UsersRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	for _, user := range Users {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+	return nil, ErrUserNotFound
 }
 
 func (r *UsersRepositoryImpl) CreateUser(ctx context.Context, user *User) (*User, error) {

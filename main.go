@@ -18,14 +18,8 @@ import (
 )
 
 func main() {
-	// ---- env ----
-	env, err := environment.Load()
-	if err != nil {
-		panic(err)
-	}
-
 	// ---- logger ----
-	l, err := logger.New(env.Env)
+	l, err := logger.New(environment.Env)
 	if err != nil {
 		panic(err)
 	}
@@ -104,14 +98,21 @@ func main() {
 
 	// ---- DI ----
 	var (
+		// ---- users ----
 		usersRepository repository.UsersRepository = repository.NewUsersRepositoryImpl(logger.WithContext(l))
 		usersAppService domain.UsersAppService     = domain.NewUsersAppServiceImpl(logger.WithContext(l), usersRepository)
 		usersController controller.UsersController = controller.NewUsersControllerImpl(logger.WithContext(l), usersAppService)
 		usersHandler    handler.UsersHandler       = handler.NewUsersHandlerImpl(logger.WithContext(l), usersController)
+
+		// ---- auth ----
+		authAppService domain.AuthAppService     = domain.NewAuthAppServiceImpl(logger.WithContext(l), usersRepository)
+		authController controller.AuthController = controller.NewAuthControllerImpl(logger.WithContext(l), authAppService)
+		authHandler    handler.AuthHandler       = handler.NewAuthHandlerImpl(logger.WithContext(l), authController)
 	)
 
 	// ---- register routers ----
 	usersHandler.Register(e.Group("/users"))
+	authHandler.Register(e.Group("/auth"))
 
 	// ---- start ----
 	l.Fatal("fatal server", zap.Error(e.Start("127.0.0.1:8080")))
